@@ -1,13 +1,18 @@
 #include <iostream>
 #include <string>
+#include <cmath>
 
 using namespace std;
+
+enum headPointer {NORTH, EAST, SOUTH, WEST};
 
 typedef struct turtle
 {
     bool floor[20][20];
     int posX;
     int posY;
+    headPointer nowHeading;
+    bool isPenDown;
 } Turtle;
 
 Turtle* initializeTurtle(void);
@@ -15,10 +20,6 @@ void printInstructions(void);
 void printFloor(Turtle *turtle);
 void processOption(string option, Turtle *turtle);
 void moveTurtle(Turtle *turtle, int spaces);
-
-bool isPenDown = false;
-enum headPointer {NORTH, EAST, SOUTH, WEST};
-headPointer nowHeading;
 
 int main(void)
 {
@@ -51,6 +52,8 @@ Turtle* initializeTurtle()
     }
     turtle->posX = 0;
     turtle->posY = 0;
+    turtle->nowHeading = EAST;
+    turtle->isPenDown = false;
 
     return turtle;
 }
@@ -86,22 +89,23 @@ void processOption(string option, Turtle *turtle)
 {
     if (option.at(0) == '1')
     {
-        isPenDown = false;
+        turtle->isPenDown = false;
     }
     else if (option.at(0) == '2')
     {
-        isPenDown = true;
+        turtle->isPenDown = true;
     }
     else if (option.at(0) == '3')
     {
-        nowHeading = static_cast<headPointer>((static_cast<int>(nowHeading) + 1) % 4);
+        turtle->nowHeading = static_cast<headPointer>((static_cast<int>(turtle->nowHeading) + 1) % 4);
     }
     else if (option.at(0) == '4')
     {
-        nowHeading = static_cast<headPointer>((static_cast<int>(nowHeading) + 3) % 4);
+        turtle->nowHeading = static_cast<headPointer>((static_cast<int>(turtle->nowHeading) + 3) % 4);
     }
     else if (option.at(0) == '5')
     {
+        cout << "(DEBUG) Wants to move " << 5<< " spaces" << endl;
         moveTurtle(turtle, 5);
     }
     else if (option.at(0) == '6')
@@ -120,4 +124,37 @@ void processOption(string option, Turtle *turtle)
 
 void moveTurtle(Turtle *turtle, int spaces)
 {
+    switch(turtle->nowHeading)
+    {
+        case NORTH:
+            for (int i = turtle->posY; i >= max(turtle->posY - spaces, 0); i--)
+            {
+                turtle->floor[i][turtle->posX] = turtle->isPenDown;
+            }
+            break;
+
+        case EAST:
+            for (int i = turtle->posX; i < min(turtle->posX + spaces, 20); i++)
+            {
+                turtle->floor[turtle->posY][i] = turtle->isPenDown;
+            }
+            break;
+
+        case SOUTH:
+            for (int i = turtle->posY; i < min(turtle->posY + spaces, 20); i++)
+            {
+                turtle->floor[i][turtle->posX] = turtle->isPenDown;
+            }
+            break;
+
+        case WEST:
+            for (int i = turtle->posX; i > max(turtle->posX - spaces, 0); i--)
+            {
+                turtle->floor[turtle->posY][i] = turtle->isPenDown;
+            }
+            break;
+
+        default:
+            break;
+    }
 }
