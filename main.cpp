@@ -105,8 +105,7 @@ void processOption(string option, Turtle *turtle)
     }
     else if (option.at(0) == '5')
     {
-        cout << "(DEBUG) Wants to move " << 5<< " spaces" << endl;
-        moveTurtle(turtle, 5);
+        moveTurtle(turtle, stoi(option.substr(2)));
     }
     else if (option.at(0) == '6')
     {
@@ -127,10 +126,12 @@ void moveTurtle(Turtle *turtle, int spaces)
     switch(turtle->nowHeading)
     {
         case NORTH:
-            for (int i = turtle->posY; i >= max(turtle->posY - spaces, 0); i--)
+            for (int i = turtle->posY; i >= max(turtle->posY - spaces - 1, 0); i--)
             {
                 turtle->floor[i][turtle->posX] = turtle->isPenDown;
             }
+
+            turtle->posY = max(turtle->posY - spaces, 0);
             break;
 
         case EAST:
@@ -138,6 +139,8 @@ void moveTurtle(Turtle *turtle, int spaces)
             {
                 turtle->floor[turtle->posY][i] = turtle->isPenDown;
             }
+
+            turtle->posX = min(turtle->posX + spaces - 1, 20 - 1);
             break;
 
         case SOUTH:
@@ -145,13 +148,17 @@ void moveTurtle(Turtle *turtle, int spaces)
             {
                 turtle->floor[i][turtle->posX] = turtle->isPenDown;
             }
+
+            turtle->posY = min(turtle->posY + spaces - 1, 20 - 1);
             break;
 
         case WEST:
-            for (int i = turtle->posX; i > max(turtle->posX - spaces, 0); i--)
+            for (int i = turtle->posX; i >= max(turtle->posX - spaces - 1, 0); i--)
             {
                 turtle->floor[turtle->posY][i] = turtle->isPenDown;
             }
+
+            turtle->posX = max(turtle->posX - spaces, 0);
             break;
 
         default:
